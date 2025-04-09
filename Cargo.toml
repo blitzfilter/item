@@ -1,0 +1,10 @@
+[package]
+name = "item"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+serde = { version = "1.0.219", features = ["derive"] }
+strum = { version = "0.27.1" }
+strum_macros = { version = "0.27.1" }
+blake3 = { version = "1.8.1" }
