@@ -1,2 +1,1 @@
-# item
-Common cargo crate for the item type.
+# Common crate for the item type
