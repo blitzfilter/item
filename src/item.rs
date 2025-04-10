@@ -215,3 +215,22 @@ pub fn hash_item_details(
     )
     .to_string()
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::item::ItemEventHash;
+
+    #[test]
+    fn should_return_item_id_for_get_item_id() {
+        let item_event_hash = ItemEventHash {
+            source_id: "item#foo".to_string(),
+            event_id: "item#foo#bar#2025-01-01T12:00:00.001+01:00".to_string(),
+            hash: "123465".to_string(),
+        };
+
+        let expected = "item#foo#bar";
+        let actual = item_event_hash.get_item_id();
+
+        assert_eq!(expected, actual);
+    }
+}
