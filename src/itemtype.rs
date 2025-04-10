@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
+use strum_macros::{Display, EnumString};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Copy, Clone, Display, EnumString)]
 pub enum ItemType {
     ORIGINAL,
     REPLICA,
