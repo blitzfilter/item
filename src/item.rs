@@ -98,17 +98,15 @@ pub fn hash_item_details(
     lower_price: Option<f32>,
     upper_price: Option<f32>,
     url: Option<String>,
-    image_url: Option<String>,
 ) -> String {
     blake3::hash(
         format!(
-            "{}|{}|{}|{}|{}|{}",
+            "{}|{}|{}|{}|{}",
             item_state.map(|x| x.to_string()).unwrap_or(String::new()),
             currency.map(|x| x.to_string()).unwrap_or(String::new()),
             lower_price.map(|x| x.to_string()).unwrap_or(String::new()),
             upper_price.map(|x| x.to_string()).unwrap_or(String::new()),
             url.map(|x| x.to_string()).unwrap_or(String::new()),
-            image_url.map(|x| x.to_string()).unwrap_or(String::new())
         )
         .as_bytes(),
     )
