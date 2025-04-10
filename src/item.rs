@@ -7,34 +7,61 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize)]
 pub struct ItemDiff {
     // item#sourceId#itemId
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub item_id: Option<String>,
 
     // item#sourceId
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub source_id: Option<String>,
 
     // item#sourceId#itemId#created
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub event_id: Option<String>,
 
     // ISO 8601: 2010-01-01T12:00:00.001+01:00
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub created: Option<String>,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub item_type: Option<ItemType>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub item_state: Option<ItemState>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub category: Option<String>,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub name_en: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub description_en: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub name_de: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub description_de: Option<String>,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub lower_year: Option<i8>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub upper_year: Option<i8>,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub currency: Option<Currency>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub lower_price: Option<f32>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub upper_price: Option<f32>,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub image_url: Option<String>,
 }
 
