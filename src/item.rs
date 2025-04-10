@@ -7,8 +7,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize)]
 pub struct ItemDiff {
     // item#sourceId#itemId
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub item_id: Option<String>,
+    pub item_id: String,
 
     // item#sourceId
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -75,6 +74,22 @@ pub struct ItemEventHash {
     pub event_id: String,
 
     pub hash: String,
+}
+
+impl ItemEventHash {
+    pub fn get_item_id(&self) -> &str {
+        let s = self.event_id.as_str();
+        let mut count = 0;
+        for (i, b) in s.bytes().enumerate() {
+            if b == b'#' {
+                count += 1;
+                if count == 3 {
+                    return &s[..i];
+                }
+            }
+        }
+        s
+    }
 }
 
 pub fn hash_item_details(
