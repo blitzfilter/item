@@ -64,6 +64,109 @@ pub struct ItemDiff {
     pub image_url: Option<String>,
 }
 
+impl ItemDiff {
+    pub fn new(item_id: String) -> Self {
+        ItemDiff {
+            item_id,
+            source_id: None,
+            event_id: None,
+            created: None,
+            item_type: None,
+            item_state: None,
+            category: None,
+            name_en: None,
+            description_en: None,
+            name_de: None,
+            description_de: None,
+            lower_year: None,
+            upper_year: None,
+            currency: None,
+            lower_price: None,
+            upper_price: None,
+            url: None,
+            image_url: None,
+        }
+    }
+
+    // region fluent-setter
+
+    pub fn source_id(&mut self, source_id: String) -> &mut Self {
+        self.source_id = Some(source_id);
+        self
+    }
+
+    pub fn event_id(&mut self, event_id: String) -> &mut Self {
+        self.event_id = Some(event_id);
+        self
+    }
+
+    pub fn created(&mut self, created: String) -> &mut Self {
+        self.created = Some(created);
+        self
+    }
+
+    pub fn item_type(&mut self, item_type: ItemType) -> &mut Self {
+        self.item_type = Some(item_type);
+        self
+    }
+    pub fn item_state(&mut self, item_state: ItemState) -> &mut Self {
+        self.item_state = Some(item_state);
+        self
+    }
+
+    pub fn category(&mut self, category: String) -> &mut Self {
+        self.category = Some(category);
+        self
+    }
+
+    pub fn name_en(&mut self, name_en: String) -> &mut Self {
+        self.name_en = Some(name_en);
+        self
+    }
+
+    pub fn description_en(&mut self, description_en: String) -> &mut Self {
+        self.description_en = Some(description_en);
+        self
+    }
+
+    pub fn lower_year(&mut self, lower_year: i8) -> &mut Self {
+        self.lower_year = Some(lower_year);
+        self
+    }
+
+    pub fn upper_year(&mut self, upper_year: i8) -> &mut Self {
+        self.upper_year = Some(upper_year);
+        self
+    }
+
+    pub fn currency(&mut self, currency: Currency) -> &mut Self {
+        self.currency = Some(currency);
+        self
+    }
+
+    pub fn lower_price(&mut self, lower_price: f32) -> &mut Self {
+        self.lower_price = Some(lower_price);
+        self
+    }
+
+    pub fn upper_price(&mut self, upper_price: f32) -> &mut Self {
+        self.upper_price = Some(upper_price);
+        self
+    }
+
+    pub fn url(&mut self, url: String) -> &mut Self {
+        self.url = Some(url);
+        self
+    }
+
+    pub fn image_url(&mut self, image_url: String) -> &mut Self {
+        self.image_url = Some(image_url);
+        self
+    }
+
+    // endregion
+}
+
 // DynamoDB Relations#GSI_1: SourceId-EventId-Hash-Index
 #[derive(Serialize, Deserialize)]
 pub struct ItemEventHash {
