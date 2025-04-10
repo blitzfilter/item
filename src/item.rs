@@ -4,7 +4,7 @@ use crate::itemtype::ItemType;
 use serde::{Deserialize, Serialize};
 
 // DynamoDB Relations#PT
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 pub struct ItemDiff {
     // item#sourceId#itemId
     pub item_id: String,
