@@ -6,4 +6,6 @@ pub enum Currency {
     EUR,
     GBP,
     USD,
+    AUD,
+    CAD
 }
