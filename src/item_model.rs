@@ -1,17 +1,57 @@
+use crate::item_hash::{ItemHash, hash_item_details};
 use crate::item_state::ItemState;
-use serde::{Deserialize, Serialize};
-use crate::item_hash::{hash_item_details, ItemHash};
+use serde::de::Visitor;
+use serde::{Deserialize, Deserializer, Serialize, Serializer, de};
+use std::fmt;
+
+const ITEM_PREFIX: &str = "item#";
+
+fn add_prefix<S: Serializer>(id: &String, serializer: S) -> Result<S::Ok, S::Error> {
+    let prefixed = format!("{}{}", ITEM_PREFIX, id);
+    serializer.serialize_str(&prefixed)
+}
+
+fn strip_prefix<'de, D: Deserializer<'de>>(deserializer: D) -> Result<String, D::Error> {
+    struct StringVisitor;
+
+    impl<'de> Visitor<'de> for StringVisitor {
+        type Value = String;
+
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str(format!("a string starting with '{ITEM_PREFIX}'").as_str())
+        }
+
+        fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+        where
+            E: de::Error,
+        {
+            value
+                .strip_prefix(ITEM_PREFIX)
+                .ok_or_else(|| E::custom(format!("missing expected prefix '{ITEM_PREFIX}'")))
+                .map(|s| s.to_string())
+        }
+    }
+
+    deserializer.deserialize_str(StringVisitor)
+}
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 pub struct ItemModel {
-
     // item#sourceId#itemId
-    #[serde(rename = "pk")]
+    #[serde(
+        rename = "pk",
+        serialize_with = "add_prefix",
+        deserialize_with = "strip_prefix"
+    )]
     pub item_id: String,
 
     // ISO 8601: 2010-01-01T12:00:00.001+01:00
-    #[serde(rename = "sk")]
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(
+        rename = "sk",
+        // serialize_with = "add_prefix",
+        // deserialize_with = "strip_prefix",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub created: Option<String>,
 
     // item#sourceId
