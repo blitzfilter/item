@@ -1,6 +1,9 @@
-use crate::currency::Currency;
 use crate::item_state::ItemState;
 use serde::{Deserialize, Serialize};
+
+pub trait ItemHash {
+    fn hash(&self) -> String;
+}
 
 // TODO: (de)serialized Fields names for DynamoDB!
 #[derive(Serialize, Deserialize)]
@@ -30,17 +33,18 @@ impl ItemEventHash {
     }
 }
 
-pub fn hash_item_details(
-    item_state: Option<ItemState>,
-    price: Option<f32>,
-    currency: Option<Currency>,
-) -> String {
+impl ItemHash for ItemEventHash {
+    fn hash(&self) -> String {
+        self.hash.clone()
+    }
+}
+
+pub fn hash_item_details(item_state: Option<ItemState>, eur_price: Option<f32>) -> String {
     blake3::hash(
         format!(
-            "{}|{}|{}",
+            "{}|{}",
             item_state.map(|x| x.to_string()).unwrap_or(String::new()),
-            price.map(|x| x.to_string()).unwrap_or(String::new()),
-            currency.map(|x| x.to_string()).unwrap_or(String::new()),
+            eur_price.map(|x| x.to_string()).unwrap_or(String::new()),
         )
         .as_bytes(),
     )

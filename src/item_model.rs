@@ -1,7 +1,8 @@
 use crate::item_state::ItemState;
 use serde::{Deserialize, Serialize};
+use crate::item_hash::{hash_item_details, ItemHash};
 
-// TODO: (de)serialized Fields names for DynamoDB!
+// TODO: (de)serialized field names for DynamoDB!
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 pub struct ItemModel {
     // pk
@@ -131,4 +132,10 @@ impl ItemModel {
     }
 
     // endregion
+}
+
+impl ItemHash for ItemModel {
+    fn hash(&self) -> String {
+        hash_item_details(self.item_state, self.price)
+    }
 }

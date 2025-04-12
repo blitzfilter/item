@@ -1,5 +1,6 @@
-use crate::currency::Currency;
+use crate::item_hash::{ItemHash, hash_item_details};
 use crate::item_state::ItemState;
+use crate::price::Price;
 use serde::{Deserialize, Serialize};
 
 // TODO: (de)serialized Fields names for API!
@@ -20,10 +21,7 @@ pub struct ItemData {
     pub item_state: Option<ItemState>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub price: Option<f32>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub currency: Option<Currency>,
+    pub price: Option<Price>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub category: Option<String>,
@@ -49,7 +47,6 @@ impl ItemData {
             created: None,
             item_state: None,
             price: None,
-            currency: None,
             category: None,
             name: None,
             description: None,
@@ -75,13 +72,8 @@ impl ItemData {
         self
     }
 
-    pub fn price(&mut self, upper_price: f32) -> &mut Self {
-        self.price = Some(upper_price);
-        self
-    }
-
-    pub fn currency(&mut self, currency: Currency) -> &mut Self {
-        self.currency = Some(currency);
+    pub fn price(&mut self, price: Price) -> &mut Self {
+        self.price = Some(price);
         self
     }
 
@@ -111,4 +103,13 @@ impl ItemData {
     }
 
     // endregion
+}
+
+impl ItemHash for ItemData {
+    fn hash(&self) -> String {
+        hash_item_details(
+            self.item_state,
+            self.price.map(|price| price.def_amount_in_euros()),
+        )
+    }
 }
