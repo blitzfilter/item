@@ -2,15 +2,15 @@ use crate::item_state::ItemState;
 use serde::{Deserialize, Serialize};
 use crate::item_hash::{hash_item_details, ItemHash};
 
-// TODO: (de)serialized field names for DynamoDB!
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 pub struct ItemModel {
-    // pk
+
     // item#sourceId#itemId
+    #[serde(rename = "pk")]
     pub item_id: String,
 
-    // sk
     // ISO 8601: 2010-01-01T12:00:00.001+01:00
+    #[serde(rename = "sk")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub created: Option<String>,
 
