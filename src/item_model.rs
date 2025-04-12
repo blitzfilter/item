@@ -1,69 +1,80 @@
 use crate::item_hash::{ItemHash, hash_item_details};
 use crate::item_state::ItemState;
-use serde::de::Visitor;
-use serde::{Deserialize, Deserializer, Serialize, Serializer, de};
-use std::fmt;
+use crate::{make_opt_prefix_fns, make_prefix_fns};
+use serde::{Deserialize, Serialize};
 
-const ITEM_PREFIX: &str = "item#";
+// region macro_gen
 
-fn add_prefix<S: Serializer>(id: &String, serializer: S) -> Result<S::Ok, S::Error> {
-    let prefixed = format!("{}{}", ITEM_PREFIX, id);
-    serializer.serialize_str(&prefixed)
-}
+make_prefix_fns!(
+    ser = ser_string_item_prefix,
+    de = de_string_item_prefix,
+    ty = String,
+    prefix = "item#"
+);
 
-fn strip_prefix<'de, D: Deserializer<'de>>(deserializer: D) -> Result<String, D::Error> {
-    struct StringVisitor;
+make_opt_prefix_fns!(
+    ser = ser_opt_string_item_prefix,
+    de = de_opt_string_item_prefix,
+    ty = String,
+    prefix = "item#"
+);
 
-    impl<'de> Visitor<'de> for StringVisitor {
-        type Value = String;
+make_opt_prefix_fns!(
+    ser = ser_opt_string_source_prefix,
+    de = de_opt_string_source_prefix,
+    ty = String,
+    prefix = "source#"
+);
 
-        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-            formatter.write_str(format!("a string starting with '{ITEM_PREFIX}'").as_str())
-        }
+make_opt_prefix_fns!(
+    ser = ser_opt_item_state_item_prefix,
+    de = de_opt_item_state_item_prefix,
+    ty = ItemState,
+    prefix = "item#"
+);
 
-        fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
-        where
-            E: de::Error,
-        {
-            value
-                .strip_prefix(ITEM_PREFIX)
-                .ok_or_else(|| E::custom(format!("missing expected prefix '{ITEM_PREFIX}'")))
-                .map(|s| s.to_string())
-        }
-    }
-
-    deserializer.deserialize_str(StringVisitor)
-}
+// endregion
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 pub struct ItemModel {
-    // item#sourceId#itemId
+    // sourceId#itemId
     #[serde(
         rename = "pk",
-        serialize_with = "add_prefix",
-        deserialize_with = "strip_prefix"
+        serialize_with = "ser_string_item_prefix",
+        deserialize_with = "de_string_item_prefix"
     )]
     pub item_id: String,
 
     // ISO 8601: 2010-01-01T12:00:00.001+01:00
     #[serde(
         rename = "sk",
-        // serialize_with = "add_prefix",
-        // deserialize_with = "strip_prefix",
+        serialize_with = "ser_opt_string_item_prefix",
+        deserialize_with = "de_opt_string_item_prefix",
         skip_serializing_if = "Option::is_none"
     )]
     pub created: Option<String>,
 
-    // item#sourceId
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(
+        serialize_with = "ser_opt_string_source_prefix",
+        deserialize_with = "de_opt_string_source_prefix",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub party_id: Option<String>,
 
-    // item#sourceId#itemId#created
-    #[serde(skip_serializing_if = "Option::is_none")]
+    // sourceId#itemId#created
+    #[serde(
+        serialize_with = "ser_opt_string_item_prefix",
+        deserialize_with = "de_opt_string_item_prefix",
+        skip_serializing_if = "Option::is_none"
+    )]
     pub event_id: Option<String>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub item_state: Option<ItemState>,
+    #[serde(
+        serialize_with = "ser_opt_item_state_item_prefix",
+        deserialize_with = "de_opt_item_state_item_prefix",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub state: Option<ItemState>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub price: Option<f32>,
@@ -97,7 +108,7 @@ impl ItemModel {
             party_id: None,
             created: None,
             event_id: None,
-            item_state: None,
+            state: None,
             price: None,
             category: None,
             name_en: None,
@@ -109,7 +120,7 @@ impl ItemModel {
         }
     }
 
-    // region fluent-setter
+    // region fluent_setter
 
     pub fn party_id(&mut self, source_id: String) -> &mut Self {
         self.party_id = Some(source_id);
@@ -126,8 +137,8 @@ impl ItemModel {
         self
     }
 
-    pub fn item_state(&mut self, item_state: ItemState) -> &mut Self {
-        self.item_state = Some(item_state);
+    pub fn state(&mut self, state: ItemState) -> &mut Self {
+        self.state = Some(state);
         self
     }
 
@@ -176,6 +187,6 @@ impl ItemModel {
 
 impl ItemHash for ItemModel {
     fn hash(&self) -> String {
-        hash_item_details(self.item_state, self.price)
+        hash_item_details(self.state, self.price)
     }
 }
