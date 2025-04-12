@@ -1,4 +1,5 @@
 pub mod currency;
-pub mod item;
-pub mod itemtype;
-pub mod itemstate;
+pub mod item_data;
+pub mod item_hash;
+pub mod item_model;
+pub mod item_state;

@@ -1,3 +1,3 @@
-[![CI](https://github.com/blitzfilter/item/actions/workflows/ci.yml/badge.svg)](https://github.com/blitzfilter/item/actions/workflows/ci.yml)
+[![CI](https://github.com/blitzfilter/item-core/actions/workflows/ci.yml/badge.svg)](https://github.com/blitzfilter/item-cote/actions/workflows/ci.yml)
 
-# Common crate for the item type
+# Crate for the core item type
