@@ -3,22 +3,21 @@ use crate::item_state::ItemState;
 use crate::price::Price;
 use serde::{Deserialize, Serialize};
 
-// TODO: (de)serialized Fields names for API!
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 pub struct ItemData {
-    // item#sourceId#itemId
+
+    #[serde(rename = "itemId")]
     pub item_id: String,
 
     // ISO 8601: 2010-01-01T12:00:00.001+01:00
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none",)]
     pub created: Option<String>,
 
-    // item#sourceId
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub party_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sourceId")]
+    pub source_id: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub item_state: Option<ItemState>,
+    pub state: Option<ItemState>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub price: Option<Price>,
@@ -35,7 +34,7 @@ pub struct ItemData {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none", rename = "imageUrl")]
     pub image_url: Option<String>,
 }
 
@@ -43,9 +42,9 @@ impl ItemData {
     pub fn new(item_id: String) -> Self {
         ItemData {
             item_id,
-            party_id: None,
+            source_id: None,
             created: None,
-            item_state: None,
+            state: None,
             price: None,
             category: None,
             name: None,
@@ -57,8 +56,8 @@ impl ItemData {
 
     // region fluent-setter
 
-    pub fn party_id(&mut self, source_id: String) -> &mut Self {
-        self.party_id = Some(source_id);
+    pub fn source_id(&mut self, source_id: String) -> &mut Self {
+        self.source_id = Some(source_id);
         self
     }
 
@@ -67,8 +66,8 @@ impl ItemData {
         self
     }
 
-    pub fn item_state(&mut self, item_state: ItemState) -> &mut Self {
-        self.item_state = Some(item_state);
+    pub fn state(&mut self, state: ItemState) -> &mut Self {
+        self.state = Some(state);
         self
     }
 
@@ -108,7 +107,7 @@ impl ItemData {
 impl ItemHash for ItemData {
     fn hash(&self) -> String {
         hash_item_details(
-            self.item_state,
+            self.state,
             self.price.map(|price| price.def_amount_in_euros()),
         )
     }
