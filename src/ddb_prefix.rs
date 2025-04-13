@@ -1,3 +1,6 @@
+use crate::item_state::ItemState;
+use serde::Deserialize;
+
 #[macro_export]
 macro_rules! make_opt_prefix_fns {
     (
@@ -7,7 +10,7 @@ macro_rules! make_opt_prefix_fns {
         prefix = $prefix:expr
     ) => {
         // Option<T>
-        fn $ser_fn<S>(val: &Option<$ty>, serializer: S) -> Result<S::Ok, S::Error>
+        pub fn $ser_fn<S>(val: &Option<$ty>, serializer: S) -> Result<S::Ok, S::Error>
         where
             S: serde::Serializer,
         {
@@ -20,7 +23,7 @@ macro_rules! make_opt_prefix_fns {
             }
         }
 
-        fn $de_fn<'de, D>(deserializer: D) -> Result<Option<$ty>, D::Error>
+        pub fn $de_fn<'de, D>(deserializer: D) -> Result<Option<$ty>, D::Error>
         where
             D: serde::Deserializer<'de>,
         {
@@ -72,7 +75,7 @@ macro_rules! make_prefix_fns {
         prefix = $prefix:expr
     ) => {
         // Plain T
-        fn $ser_fn<S>(val: &$ty, serializer: S) -> Result<S::Ok, S::Error>
+        pub fn $ser_fn<S>(val: &$ty, serializer: S) -> Result<S::Ok, S::Error>
         where
             S: serde::Serializer,
         {
@@ -80,7 +83,7 @@ macro_rules! make_prefix_fns {
             serializer.serialize_str(&s)
         }
 
-        fn $de_fn<'de, D>(deserializer: D) -> Result<$ty, D::Error>
+        pub fn $de_fn<'de, D>(deserializer: D) -> Result<$ty, D::Error>
         where
             D: serde::Deserializer<'de>,
         {
@@ -114,3 +117,35 @@ macro_rules! make_prefix_fns {
         }
     };
 }
+
+// region macro_gen
+
+make_prefix_fns!(
+    ser = ser_string_item_prefix,
+    de = de_string_item_prefix,
+    ty = String,
+    prefix = "item#"
+);
+
+make_opt_prefix_fns!(
+    ser = ser_opt_string_item_prefix,
+    de = de_opt_string_item_prefix,
+    ty = String,
+    prefix = "item#"
+);
+
+make_opt_prefix_fns!(
+    ser = ser_opt_string_source_prefix,
+    de = de_opt_string_source_prefix,
+    ty = String,
+    prefix = "source#"
+);
+
+make_opt_prefix_fns!(
+    ser = ser_opt_item_state_item_prefix,
+    de = de_opt_item_state_item_prefix,
+    ty = ItemState,
+    prefix = "item#"
+);
+
+// endregion

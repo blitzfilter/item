@@ -1,77 +1,44 @@
 use crate::item_hash::{ItemHash, hash_item_details};
 use crate::item_state::ItemState;
-use crate::{make_opt_prefix_fns, make_prefix_fns};
 use serde::{Deserialize, Serialize};
-
-// region macro_gen
-
-make_prefix_fns!(
-    ser = ser_string_item_prefix,
-    de = de_string_item_prefix,
-    ty = String,
-    prefix = "item#"
-);
-
-make_opt_prefix_fns!(
-    ser = ser_opt_string_item_prefix,
-    de = de_opt_string_item_prefix,
-    ty = String,
-    prefix = "item#"
-);
-
-make_opt_prefix_fns!(
-    ser = ser_opt_string_source_prefix,
-    de = de_opt_string_source_prefix,
-    ty = String,
-    prefix = "source#"
-);
-
-make_opt_prefix_fns!(
-    ser = ser_opt_item_state_item_prefix,
-    de = de_opt_item_state_item_prefix,
-    ty = ItemState,
-    prefix = "item#"
-);
-
-// endregion
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 pub struct ItemModel {
     // sourceId#itemId
     #[serde(
         rename = "pk",
-        serialize_with = "ser_string_item_prefix",
-        deserialize_with = "de_string_item_prefix"
+        serialize_with = "crate::ddb_prefix::ser_string_item_prefix",
+        deserialize_with = "crate::ddb_prefix::de_string_item_prefix"
     )]
     pub item_id: String,
 
     // ISO 8601: 2010-01-01T12:00:00.001+01:00
     #[serde(
         rename = "sk",
-        serialize_with = "ser_opt_string_item_prefix",
-        deserialize_with = "de_opt_string_item_prefix",
+        serialize_with = "crate::ddb_prefix::ser_opt_string_item_prefix",
+        deserialize_with = "crate::ddb_prefix::de_opt_string_item_prefix",
         skip_serializing_if = "Option::is_none"
     )]
     pub created: Option<String>,
 
     #[serde(
-        serialize_with = "ser_opt_string_source_prefix",
-        deserialize_with = "de_opt_string_source_prefix",
+        serialize_with = "crate::ddb_prefix::ser_opt_string_source_prefix",
+        deserialize_with = "crate::ddb_prefix::de_opt_string_source_prefix",
         skip_serializing_if = "Option::is_none"
     )]
     pub party_id: Option<String>,
 
     // sourceId#itemId#created
     #[serde(
-        serialize_with = "ser_opt_string_item_prefix",
-        deserialize_with = "de_opt_string_item_prefix",
+        serialize_with = "crate::ddb_prefix::ser_opt_string_item_prefix",
+        deserialize_with = "crate::ddb_prefix::de_opt_string_item_prefix",
         skip_serializing_if = "Option::is_none"
     )]
     pub event_id: Option<String>,
 
     #[serde(
-        serialize_with = "ser_opt_item_state_item_prefix",
-        deserialize_with = "de_opt_item_state_item_prefix",
+        serialize_with = "crate::ddb_prefix::ser_opt_item_state_item_prefix",
+        deserialize_with = "crate::ddb_prefix::de_opt_item_state_item_prefix",
         skip_serializing_if = "Option::is_none"
     )]
     pub state: Option<ItemState>,

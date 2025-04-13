@@ -5,13 +5,21 @@ pub trait ItemHash {
     fn hash(&self) -> String;
 }
 
-// TODO: (de)serialized Fields names for DynamoDB!
 #[derive(Serialize, Deserialize)]
 pub struct ItemEventHash {
-    // item#sourceId
+    // sourceId
+    #[serde(
+        rename = "party_id",
+        serialize_with = "crate::ddb_prefix::ser_string_item_prefix",
+        deserialize_with = "crate::ddb_prefix::de_string_item_prefix"
+    )]
     pub source_id: String,
 
-    // item#sourceId#itemId#created
+    // sourceId#itemId#created
+    #[serde(
+        serialize_with = "crate::ddb_prefix::ser_string_item_prefix",
+        deserialize_with = "crate::ddb_prefix::de_string_item_prefix"
+    )]
     pub event_id: String,
 
     pub hash: String,
@@ -24,7 +32,7 @@ impl ItemEventHash {
         for (i, b) in s.bytes().enumerate() {
             if b == b'#' {
                 count += 1;
-                if count == 3 {
+                if count == 2 {
                     return &s[..i];
                 }
             }
@@ -58,12 +66,12 @@ mod tests {
     #[test]
     fn should_return_item_id_for_get_item_id() {
         let item_event_hash = ItemEventHash {
-            source_id: "item#foo".to_string(),
-            event_id: "item#foo#bar#2025-01-01T12:00:00.001+01:00".to_string(),
+            source_id: "foo".to_string(),
+            event_id: "foo#bar#2025-01-01T12:00:00.001+01:00".to_string(),
             hash: "123465".to_string(),
         };
 
-        let expected = "item#foo#bar";
+        let expected = "foo#bar";
         let actual = item_event_hash.get_item_id();
 
         assert_eq!(expected, actual);
