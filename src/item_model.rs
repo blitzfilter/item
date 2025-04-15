@@ -1,6 +1,12 @@
+use crate::item_data::ItemData;
 use crate::item_hash::{ItemHash, hash_item_details};
 use crate::item_state::ItemState;
+use crate::language::I18nString;
+use crate::language::Language::{DE, EN};
+use crate::price::Currency::EUR;
+use crate::price::Price;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 pub struct ItemModel {
@@ -155,5 +161,40 @@ impl ItemModel {
 impl ItemHash for ItemModel {
     fn hash(&self) -> String {
         hash_item_details(self.state, self.price)
+    }
+}
+
+impl Into<ItemData> for ItemModel {
+    fn into(self) -> ItemData {
+        ItemData {
+            item_id: self.item_id,
+            created: self.created,
+            source_id: self.party_id,
+            state: self.state,
+            price: self.price.map(|price| Price::new(EUR, price)),
+            category: self.category,
+            name: {
+                let mut name: I18nString = HashMap::new();
+                if self.name_en.is_some() {
+                    name.insert(EN, self.name_en.unwrap());
+                }
+                if self.name_de.is_some() {
+                    name.insert(DE, self.name_de.unwrap());
+                }
+                name
+            },
+            description: {
+                let mut description: I18nString = HashMap::new();
+                if self.description_en.is_some() {
+                    description.insert(EN, self.description_en.unwrap());
+                }
+                if self.description_de.is_some() {
+                    description.insert(DE, self.description_de.unwrap());
+                }
+                description
+            },
+            url: self.url,
+            image_url: self.image_url,
+        }
     }
 }

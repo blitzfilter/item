@@ -1,13 +1,13 @@
-use std::collections::HashMap;
 use crate::item_hash::{ItemHash, hash_item_details};
 use crate::item_model::ItemModel;
 use crate::item_state::ItemState;
+use crate::language::Language::{DE, EN};
+use crate::language::{I18nString, Language};
 use crate::price::Price;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use time::OffsetDateTime;
 use time::format_description::well_known::Rfc3339;
-use crate::language::{I18nString, Language};
-use crate::language::Language::{DE, EN};
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 pub struct ItemData {
