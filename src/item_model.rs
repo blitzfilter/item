@@ -72,6 +72,9 @@ pub struct ItemModel {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub image_url: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub hash: Option<String>,
 }
 
 impl ItemModel {
@@ -90,6 +93,7 @@ impl ItemModel {
             description_de: None,
             url: None,
             image_url: None,
+            hash: None,
         }
     }
 

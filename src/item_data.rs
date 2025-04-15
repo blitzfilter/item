@@ -153,6 +153,10 @@ impl Into<ItemModel> for ItemData {
             description_de: self.description.get(&DE).map(|x| x.to_string()),
             url: self.url,
             image_url: self.image_url,
+            hash: Some(hash_item_details(
+                self.state,
+                self.price.map(|price| price.def_amount_in_euros()),
+            )),
         }
     }
 }
