@@ -137,10 +137,9 @@ impl Into<ItemModel> for ItemData {
         ItemModel {
             item_id: self.item_id.clone(),
             created: created.clone(),
-            party_id: self.source_id.clone(),
+            party_id: self.source_id,
             event_id: Some(format!(
-                "{}#{}#{}",
-                self.source_id.unwrap(),
+                "{}#{}",
                 self.item_id,
                 created.unwrap()
             )),
