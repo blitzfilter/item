@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use strum_macros::{Display, EnumString};
 
+// ISO 4217
 #[derive(Serialize, Deserialize, Copy, Clone, Display, EnumString, Eq, PartialEq, Debug)]
 pub enum Currency {
     EUR,
