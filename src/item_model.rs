@@ -322,4 +322,40 @@ mod tests {
 
         assert_eq!(actual, expected);
     }
+    
+    #[test]
+    fn should_convert_model_into_data() {
+        let model = ItemModel {
+            item_id: "https://foo.bar#123456".to_string(),
+            created: Some("2010-01-01T12:00:00.001+01:00".to_string()),
+            source_id: Some("https://foo.bar".to_string()),
+            event_id: Some("https://foo.bar#123456#2010-01-01T12:00:00.001+01:00".to_string()),
+            state: Some(ItemState::AVAILABLE),
+            price: Some(42f32),
+            category: Some("foo".to_string()),
+            name_en: Some("bar".to_string()),
+            description_en: Some("baz".to_string()),
+            name_de: Some("balken".to_string()),
+            description_de: Some("basis".to_string()),
+            url: Some("https://foo.bar?item=123456".to_string()),
+            image_url: Some("https://foo.bar?item_img=123456".to_string()),
+            hash: Some("1d10a63438fff3ccd4877c2195c0a377a6ee0c8caad97e652b1e69c68b45557b".to_string()),
+        };
+        let expected = ItemData {
+            item_id: "https://foo.bar#123456".to_string(),
+            created: Some("2010-01-01T12:00:00.001+01:00".to_string()),
+            source_id: Some("https://foo.bar".to_string()),
+            state: Some(ItemState::AVAILABLE),
+            price: Some(Price::new(EUR, 42f32)),
+            category: Some("foo".to_string()),
+            name: HashMap::from([(EN, "bar".to_string()), (DE, "balken".to_string())]),
+            description: HashMap::from([(EN, "baz".to_string()), (DE, "basis".to_string())]),
+            url: Some("https://foo.bar?item=123456".to_string()),
+            image_url: Some("https://foo.bar?item_img=123456".to_string()),
+        };
+        
+        let actual: ItemData = model.into();
+        
+        assert_eq!(actual, expected)
+    }
 }
