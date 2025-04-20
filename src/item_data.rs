@@ -15,31 +15,31 @@ pub struct ItemData {
     pub item_id: String,
 
     // ISO 8601: 2010-01-01T12:00:00.001+01:00
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none", default)]
     pub created: Option<String>,
 
-    #[serde(skip_serializing_if = "Option::is_none", rename = "sourceId")]
+    #[serde(skip_serializing_if = "Option::is_none", rename = "sourceId", default)]
     pub source_id: Option<String>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none", default)]
     pub state: Option<ItemState>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none", default)]
     pub price: Option<Price>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none", default)]
     pub category: Option<String>,
 
-    #[serde(default, skip_serializing_if = "std::collections::HashMap::is_empty")]
+    #[serde(skip_serializing_if = "std::collections::HashMap::is_empty", default)]
     pub name: I18nString,
 
-    #[serde(default, skip_serializing_if = "std::collections::HashMap::is_empty")]
+    #[serde(skip_serializing_if = "std::collections::HashMap::is_empty", default)]
     pub description: I18nString,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none", default)]
     pub url: Option<String>,
 
-    #[serde(skip_serializing_if = "Option::is_none", rename = "imageUrl")]
+    #[serde(skip_serializing_if = "Option::is_none", rename = "imageUrl", default)]
     pub image_url: Option<String>,
 }
 
@@ -137,7 +137,7 @@ impl Into<ItemModel> for ItemData {
         ItemModel {
             item_id: self.item_id.clone(),
             created: created.clone(),
-            party_id: self.source_id,
+            source_id: self.source_id,
             event_id: Some(format!(
                 "{}#{}",
                 self.item_id,

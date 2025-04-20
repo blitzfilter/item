@@ -23,57 +23,62 @@ pub struct ItemModel {
         rename = "sk",
         serialize_with = "crate::ddb_prefix::ser_opt_string_item_prefix",
         deserialize_with = "crate::ddb_prefix::de_opt_string_item_prefix",
-        skip_serializing_if = "Option::is_none"
+        skip_serializing_if = "Option::is_none",
+        default
     )]
     pub created: Option<String>,
 
     #[serde(
+        rename = "party_id",
         serialize_with = "crate::ddb_prefix::ser_opt_string_source_prefix",
         deserialize_with = "crate::ddb_prefix::de_opt_string_source_prefix",
-        skip_serializing_if = "Option::is_none"
+        skip_serializing_if = "Option::is_none",
+        default
     )]
-    pub party_id: Option<String>,
+    pub source_id: Option<String>,
 
     // sourceId#itemId#created
     #[serde(
         serialize_with = "crate::ddb_prefix::ser_opt_string_item_prefix",
         deserialize_with = "crate::ddb_prefix::de_opt_string_item_prefix",
-        skip_serializing_if = "Option::is_none"
+        skip_serializing_if = "Option::is_none",
+        default
     )]
     pub event_id: Option<String>,
 
     #[serde(
         serialize_with = "crate::ddb_prefix::ser_opt_item_state_item_prefix",
         deserialize_with = "crate::ddb_prefix::de_opt_item_state_item_prefix",
-        skip_serializing_if = "Option::is_none"
+        skip_serializing_if = "Option::is_none",
+        default
     )]
     pub state: Option<ItemState>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none", default)]
     pub price: Option<f32>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none", default)]
     pub category: Option<String>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none", default)]
     pub name_en: Option<String>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none", default)]
     pub description_en: Option<String>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none", default)]
     pub name_de: Option<String>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none", default)]
     pub description_de: Option<String>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none", default)]
     pub url: Option<String>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none", default)]
     pub image_url: Option<String>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none", default)]
     pub hash: Option<String>,
 }
 
@@ -81,7 +86,7 @@ impl ItemModel {
     pub fn new(item_id: String) -> Self {
         ItemModel {
             item_id,
-            party_id: None,
+            source_id: None,
             created: None,
             event_id: None,
             state: None,
@@ -99,8 +104,8 @@ impl ItemModel {
 
     // region fluent_setter
 
-    pub fn party_id(&mut self, source_id: String) -> &mut Self {
-        self.party_id = Some(source_id);
+    pub fn source_id(&mut self, source_id: String) -> &mut Self {
+        self.source_id = Some(source_id);
         self
     }
 
@@ -173,7 +178,7 @@ impl Into<ItemData> for ItemModel {
         ItemData {
             item_id: self.item_id,
             created: self.created,
-            source_id: self.party_id,
+            source_id: self.source_id,
             state: self.state,
             price: self.price.map(|price| Price::new(EUR, price)),
             category: self.category,
@@ -200,5 +205,121 @@ impl Into<ItemData> for ItemModel {
             url: self.url,
             image_url: self.image_url,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use rstest::rstest;
+    use super::*;
+
+    #[test]
+    fn should_serialize_item_id_as_pk_with_prefix_item() {
+        let item = ItemModel::new("123456".to_string());
+        let expected = r#""pk":"item#123456""#;
+
+        let actual = serde_json::to_string(&item).unwrap();
+        
+        assert!(actual.contains(expected));
+    }
+
+    #[test]
+    fn should_deserialize_item_id_as_pk_with_prefix_item() {
+        let item_json = r#"{"pk":"item#123456"}"#;
+        let expected = ItemModel::new("123456".to_string());
+        
+        let actual = serde_json::from_str::<ItemModel>(item_json).unwrap();
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn should_serialize_created_as_sk_with_prefix_item() {
+        let item = ItemModel::new("123456".to_string()).created("abcdef".to_string()).to_owned();
+        let expected = r#""sk":"item#abcdef""#;
+
+        let actual = serde_json::to_string(&item).unwrap();
+
+        assert!(actual.contains(&expected));
+    }
+
+    #[test]
+    fn should_deserialize_created_as_sk_with_prefix_item() {
+        let item_json = r#"{"pk":"item#123456", "sk":"item#abcdef"}"#;
+        let expected = ItemModel::new("123456".to_string()).created("abcdef".to_string()).to_owned();
+
+        let actual = serde_json::from_str::<ItemModel>(item_json).unwrap();
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn should_serialize_source_id_as_party_id_with_prefix_source() {
+        let item = ItemModel::new("123456".to_string()).source_id("abcdef".to_string()).to_owned();
+        let expected = r#""party_id":"source#abcdef""#;
+
+        let actual = serde_json::to_string(&item).unwrap();
+
+        assert!(actual.contains(&expected));
+    }
+
+    #[test]
+    fn should_deserialize_source_id_as_party_id_with_prefix_source() {
+        let item_json = r#"{"pk":"item#123456", "party_id":"source#abcdef"}"#;
+        let expected = ItemModel::new("123456".to_string()).source_id("abcdef".to_string()).to_owned();
+
+        let actual = serde_json::from_str::<ItemModel>(item_json).unwrap();
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn should_serialize_event_id_as_event_id_with_prefix_item() {
+        let item = ItemModel::new("123456".to_string()).event_id("abcdef".to_string()).to_owned();
+        let expected = r#""event_id":"item#abcdef""#;
+
+        let actual = serde_json::to_string(&item).unwrap();
+
+        assert!(actual.contains(&expected));
+    }
+
+    #[test]
+    fn should_deserialize_event_id_as_event_id_with_prefix_item() {
+        let item_json = r#"{"pk":"item#123456", "event_id":"item#abcdef"}"#;
+        let expected = ItemModel::new("123456".to_string()).event_id("abcdef".to_string()).to_owned();
+
+        let actual = serde_json::from_str::<ItemModel>(item_json).unwrap();
+
+        assert_eq!(actual, expected);
+    }
+
+    #[rstest]
+    #[case(ItemState::LISTED, "LISTED")]
+    #[case(ItemState::AVAILABLE, "AVAILABLE")]
+    #[case(ItemState::RESERVED, "RESERVED")]
+    #[case(ItemState::SOLD, "SOLD")]
+    #[case(ItemState::REMOVED, "REMOVED")]
+    fn should_serialize_state_as_state_with_prefix_item(#[case] state: ItemState, #[case] expected: &str) {
+        let item = ItemModel::new("123456".to_string()).state(state).to_owned();
+        let expected = format!(r#""state":"item#{expected}""#);
+
+        let actual = serde_json::to_string(&item).unwrap();
+
+        assert!(actual.contains(&expected));
+    }
+
+    #[rstest]
+    #[case("LISTED", ItemState::LISTED)]
+    #[case("AVAILABLE", ItemState::AVAILABLE)]
+    #[case("RESERVED", ItemState::RESERVED)]
+    #[case("SOLD", ItemState::SOLD)]
+    #[case("REMOVED", ItemState::REMOVED)]
+    fn should_deserialize_state_as_state_with_prefix_item(#[case] state: &str, #[case] expected: ItemState) {
+        let item_json = format!(r#"{{"pk":"item#123456", "state":"item#{state}"}}"#);
+        let expected = ItemModel::new("123456".to_string()).state(expected).to_owned();
+
+        let actual = serde_json::from_str::<ItemModel>(&item_json).unwrap();
+
+        assert_eq!(actual, expected);
     }
 }
