@@ -7,7 +7,6 @@ pub trait ItemHash {
 
 #[derive(Serialize, Deserialize)]
 pub struct ItemEventHash {
-    // sourceId
     #[serde(
         rename = "party_id",
         serialize_with = "crate::ddb_prefix::ser_string_source_prefix",
