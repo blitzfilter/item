@@ -10,8 +10,8 @@ pub struct ItemEventHash {
     // sourceId
     #[serde(
         rename = "party_id",
-        serialize_with = "crate::ddb_prefix::ser_string_item_prefix",
-        deserialize_with = "crate::ddb_prefix::de_string_item_prefix"
+        serialize_with = "crate::ddb_prefix::ser_string_source_prefix",
+        deserialize_with = "crate::ddb_prefix::de_string_source_prefix"
     )]
     pub source_id: String,
 

@@ -127,6 +127,13 @@ make_prefix_fns!(
     prefix = "item#"
 );
 
+make_prefix_fns!(
+    ser = ser_string_source_prefix,
+    de = de_string_source_prefix,
+    ty = String,
+    prefix = "source#"
+);
+
 make_opt_prefix_fns!(
     ser = ser_opt_string_item_prefix,
     de = de_opt_string_item_prefix,
