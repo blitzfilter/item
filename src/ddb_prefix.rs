@@ -44,7 +44,7 @@ macro_rules! make_opt_prefix_fns {
                 where
                     D: serde::Deserializer<'de>,
                 {
-                    let s: &str = Deserialize::deserialize(deserializer)?;
+                    let s: String = Deserialize::deserialize(deserializer)?;
                     let stripped = s.strip_prefix($prefix).ok_or_else(|| {
                         serde::de::Error::custom(concat!("missing prefix '", $prefix, "'"))
                     })?;

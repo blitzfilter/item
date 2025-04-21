@@ -405,6 +405,118 @@ mod tests {
     }
 
     #[test]
+    fn should_serialize_model_directly() {
+        let model = ItemModel {
+            item_id: "https://foo.bar#123456".to_string(),
+            created: Some("2010-01-01T12:00:00.001+01:00".to_string()),
+            source_id: Some("https://foo.bar".to_string()),
+            event_id: Some("https://foo.bar#123456#2010-01-01T12:00:00.001+01:00".to_string()),
+            state: Some(ItemState::AVAILABLE),
+            price: Some(42f32),
+            category: Some("foo".to_string()),
+            name_en: Some("bar".to_string()),
+            description_en: Some("baz".to_string()),
+            name_de: Some("balken".to_string()),
+            description_de: Some("basis".to_string()),
+            url: Some("https://foo.bar?item=123456".to_string()),
+            image_url: Some("https://foo.bar?item_img=123456".to_string()),
+            hash: Some(
+                "1d10a63438fff3ccd4877c2195c0a377a6ee0c8caad97e652b1e69c68b45557b".to_string(),
+            ),
+        };
+
+        let expected = r#"{"pk":"item#https://foo.bar#123456","sk":"item#2010-01-01T12:00:00.001+01:00","party_id":"source#https://foo.bar","event_id":"item#https://foo.bar#123456#2010-01-01T12:00:00.001+01:00","state":"item#AVAILABLE","price":42.0,"category":"foo","name_en":"bar","description_en":"baz","name_de":"balken","description_de":"basis","url":"https://foo.bar?item=123456","image_url":"https://foo.bar?item_img=123456","hash":"1d10a63438fff3ccd4877c2195c0a377a6ee0c8caad97e652b1e69c68b45557b"}"#;
+
+        let actual = serde_json::to_string(&model).unwrap();
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn should_deserialize_model_directly() {
+        let json = r#"{"pk":"item#https://foo.bar#123456","sk":"item#2010-01-01T12:00:00.001+01:00","party_id":"source#https://foo.bar","event_id":"item#https://foo.bar#123456#2010-01-01T12:00:00.001+01:00","state":"item#AVAILABLE","price":42.0,"category":"foo","name_en":"bar","description_en":"baz","name_de":"balken","description_de":"basis","url":"https://foo.bar?item=123456","image_url":"https://foo.bar?item_img=123456","hash":"1d10a63438fff3ccd4877c2195c0a377a6ee0c8caad97e652b1e69c68b45557b"}"#;
+        let expected = ItemModel {
+            item_id: "https://foo.bar#123456".to_string(),
+            created: Some("2010-01-01T12:00:00.001+01:00".to_string()),
+            source_id: Some("https://foo.bar".to_string()),
+            event_id: Some("https://foo.bar#123456#2010-01-01T12:00:00.001+01:00".to_string()),
+            state: Some(ItemState::AVAILABLE),
+            price: Some(42f32),
+            category: Some("foo".to_string()),
+            name_en: Some("bar".to_string()),
+            description_en: Some("baz".to_string()),
+            name_de: Some("balken".to_string()),
+            description_de: Some("basis".to_string()),
+            url: Some("https://foo.bar?item=123456".to_string()),
+            image_url: Some("https://foo.bar?item_img=123456".to_string()),
+            hash: Some(
+                "1d10a63438fff3ccd4877c2195c0a377a6ee0c8caad97e652b1e69c68b45557b".to_string(),
+            ),
+        };
+
+        let actual = serde_json::from_str::<ItemModel>(json).unwrap();
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn should_serialize_model_indirectly() {
+        let model = ItemModel {
+            item_id: "https://foo.bar#123456".to_string(),
+            created: Some("2010-01-01T12:00:00.001+01:00".to_string()),
+            source_id: Some("https://foo.bar".to_string()),
+            event_id: Some("https://foo.bar#123456#2010-01-01T12:00:00.001+01:00".to_string()),
+            state: Some(ItemState::AVAILABLE),
+            price: Some(42f32),
+            category: Some("foo".to_string()),
+            name_en: Some("bar".to_string()),
+            description_en: Some("baz".to_string()),
+            name_de: Some("balken".to_string()),
+            description_de: Some("basis".to_string()),
+            url: Some("https://foo.bar?item=123456".to_string()),
+            image_url: Some("https://foo.bar?item_img=123456".to_string()),
+            hash: Some(
+                "1d10a63438fff3ccd4877c2195c0a377a6ee0c8caad97e652b1e69c68b45557b".to_string(),
+            ),
+        };
+
+        let expected = r#"{"category":"foo","description_de":"basis","description_en":"baz","event_id":"item#https://foo.bar#123456#2010-01-01T12:00:00.001+01:00","hash":"1d10a63438fff3ccd4877c2195c0a377a6ee0c8caad97e652b1e69c68b45557b","image_url":"https://foo.bar?item_img=123456","name_de":"balken","name_en":"bar","party_id":"source#https://foo.bar","pk":"item#https://foo.bar#123456","price":42.0,"sk":"item#2010-01-01T12:00:00.001+01:00","state":"item#AVAILABLE","url":"https://foo.bar?item=123456"}"#;
+
+        let val = serde_json::to_value(&model).unwrap();
+        let actual = serde_json::to_string(&val).unwrap();
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn should_deserialize_model_indirectly() {
+        let json = r#"{"pk":"item#https://foo.bar#123456","sk":"item#2010-01-01T12:00:00.001+01:00","party_id":"source#https://foo.bar","event_id":"item#https://foo.bar#123456#2010-01-01T12:00:00.001+01:00","state":"item#AVAILABLE","price":42.0,"category":"foo","name_en":"bar","description_en":"baz","name_de":"balken","description_de":"basis","url":"https://foo.bar?item=123456","image_url":"https://foo.bar?item_img=123456","hash":"1d10a63438fff3ccd4877c2195c0a377a6ee0c8caad97e652b1e69c68b45557b"}"#;
+        let expected = ItemModel {
+            item_id: "https://foo.bar#123456".to_string(),
+            created: Some("2010-01-01T12:00:00.001+01:00".to_string()),
+            source_id: Some("https://foo.bar".to_string()),
+            event_id: Some("https://foo.bar#123456#2010-01-01T12:00:00.001+01:00".to_string()),
+            state: Some(ItemState::AVAILABLE),
+            price: Some(42f32),
+            category: Some("foo".to_string()),
+            name_en: Some("bar".to_string()),
+            description_en: Some("baz".to_string()),
+            name_de: Some("balken".to_string()),
+            description_de: Some("basis".to_string()),
+            url: Some("https://foo.bar?item=123456".to_string()),
+            image_url: Some("https://foo.bar?item_img=123456".to_string()),
+            hash: Some(
+                "1d10a63438fff3ccd4877c2195c0a377a6ee0c8caad97e652b1e69c68b45557b".to_string(),
+            ),
+        };
+
+        let val = serde_json::from_str::<serde_json::Value>(json).unwrap();
+        let actual = serde_json::from_value::<ItemModel>(val).unwrap();
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
     fn should_convert_model_into_data() {
         let model = ItemModel {
             item_id: "https://foo.bar#123456".to_string(),
@@ -494,9 +606,9 @@ mod tests {
             .url("https://foo.bar?item=123456".to_string())
             .image_url("https://foo.bar?item_img=123456".to_string())
             .to_owned();
-        
+
         let actual: Result<ItemModel, String> = ItemModel::try_from(&item_events[..]);
-        
+
         assert!(actual.is_ok());
         assert_eq!(actual.unwrap(), expected)
     }
