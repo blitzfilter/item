@@ -5,7 +5,7 @@ pub trait ItemHash {
     fn hash(&self) -> String;
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct ItemEventHash {
     #[serde(
         rename = "party_id",
@@ -74,5 +74,54 @@ mod tests {
         let actual = item_event_hash.get_item_id();
 
         assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn should_serialize() {
+        let item = ItemEventHash {
+            source_id: "foo".to_string(),
+            event_id: "foo#bar#123456".to_string(),
+            hash: "abcdef".to_string(),
+        };
+        let actual = serde_json::to_string(&item).unwrap();
+
+        let expected = r#"{"party_id":"source#foo","event_id":"item#foo#bar#123456","hash":"abcdef"}"#;
+        assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn should_deserialize() {
+        let item_json = r#"{"party_id":"source#foo","event_id":"item#foo#bar#123456","hash":"abcdef"}"#;
+        let actual = serde_json::from_str::<ItemEventHash>(item_json).unwrap();
+
+        let expected = ItemEventHash {
+            source_id: "foo".to_string(),
+            event_id: "foo#bar#123456".to_string(),
+            hash: "abcdef".to_string(),
+        };
+        assert_eq!(expected, actual);
+    }
+    
+    #[test]
+    fn should_round_trip_serialize_eq_deserialize() {
+        let item = ItemEventHash {
+            source_id: "foo".to_string(),
+            event_id: "foo#bar#123456".to_string(),
+            hash: "abcdef".to_string(),
+        };
+        let serialized = serde_json::to_string(&item).unwrap();
+        let actual: ItemEventHash = serde_json::from_str(&serialized).unwrap();
+        
+        assert_eq!(item, actual);
+    }
+
+    #[test]
+    fn should_round_trip_deserialize_eq_serialize() {
+        let item_json = r#"{"party_id":"source#foo","event_id":"item#foo#bar#123456","hash":"abcdef"}"#;
+        let deserialized = serde_json::from_str::<ItemEventHash>(item_json).unwrap();
+
+        let actual = serde_json::to_string(&deserialized).unwrap();
+        
+        assert_eq!(item_json, actual);
     }
 }
