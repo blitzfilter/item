@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
-use strum_macros::{Display, EnumString};
+use strum_macros::{Display, EnumIter, EnumString};
 
 // ISO 639-1
-#[derive(Serialize, Deserialize, Copy, Clone, Display, EnumString, Eq, PartialEq, Debug, Hash)]
+#[derive(Serialize, Deserialize, Copy, Clone, Display, EnumString, EnumIter, Eq, PartialEq, Debug, Hash)]
 #[serde(rename_all = "lowercase")]
 pub enum Language {
     DE,
